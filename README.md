@@ -227,7 +227,7 @@ Are related to [type theory](https://plato.stanford.edu/entries/type-theory/) : 
 In computer science, it is strongly linked to the programming language or framework. We speak about *Dynamic* vs *Static* (consensus) and *Weak* vs *Strong* (controversial) type systems. Because there is many definitions, I propose this one :
 
 Strong | Weak | Static | Dynamic
-- |:-: |:-: |  -:
+:-: |:-: |:-: |  :-:
 Generate a compile errors| Unpredictable runtime errors | Compiler tag piece of code |Compiler / Interpreter generate code to keep track of data
 Perform type check before code run without implicit conversion | Try implicit conversion | Tries to infer if the behaviour is valid |
 Well defined error set |  | Before program run |
@@ -335,7 +335,8 @@ As we have seen before, there is no immutability in JS : `const` is an immutable
 
 To use immutable, install it `npm i -D immutable`
 
-We can alter our first function like this to be sure `calculate` never alter `radii` ... so we also need to alter tests because we change specification : radii is now a List and no more an Array. Good job TDD regressions avoid (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧
+We can alter our first function like this to be sure `calculate` never alter `radii` ... so we also need to alter tests because we change specification : radii is now a List and no more an Array. <br/> 
+Good job TDD regressions avoid (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧
 ```Javascript
 import { List } from 'immutable';
 
