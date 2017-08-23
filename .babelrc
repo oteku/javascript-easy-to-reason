@@ -1,0 +1,13 @@
+{
+  "presets": [
+    "flow",
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ]
+  ]
+}

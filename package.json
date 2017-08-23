@@ -1,0 +1,46 @@
+{
+  "name": "javascript-easy-to-reason",
+  "version": "1.0.0",
+  "description": "Training project to make javascript code easy to reason about",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm run flow && npm run eslint && rimraf build/",
+    "build": "babel src -d ./build --ignore '**/*.test.js'",
+    "dev": "babel-watch src/",
+    "start": "node ./build",
+    "test": "jest",
+    "flow": "flow status",
+    "eslint": "eslint src/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oteku/javascript-easy-to-reason.git"
+  },
+  "keywords": [
+    "javascript",
+    "jest",
+    "tdd"
+  ],
+  "author": "oteku",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oteku/javascript-easy-to-reason/issues"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-jest": "^20.0.3",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-flow": "^6.23.0",
+    "eslint": "^4.3.0",
+    "eslint-plugin-jest": "^20.0.3",
+    "flow-bin": "^0.53.1",
+    "immutable": "^3.8.1",
+    "jest": "^20.0.4",
+    "prettier": "^1.5.3",
+    "prettier-eslint": "^6.4.2",
+    "prettier-eslint-cli": "^4.1.1",
+    "rimraf": "^2.6.1"
+  },
+  "homepage": "https://github.com/oteku/javascript-easy-to-reason#readme"
+}
