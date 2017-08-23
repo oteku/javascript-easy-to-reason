@@ -36,9 +36,9 @@ update your test.
 We write a first test to describe our program
 
 ```Javascript
-test('area for [1, 2]', () => {
-  const radii = [1, 2];
-  const expectedResult = [3.14159 * 1 * 1, 3.14159 * 2 * 2];
+test('area for [1]', () => {
+  const radii = [1];
+  const expectedResult = [3.14159 * 1 * 1];
   expect(calculate(radii)).toEqual(expectedResult);
 });
 ```
