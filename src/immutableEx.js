@@ -1,15 +1,6 @@
 // @flow
 import { List } from 'immutable';
 
-const list: List<number> = List([1, 2]);
-
-function calculate(radii: List<number>, pi: number = 3.14): List<number> {
-  const areas = radii.map(radius => pi * radius * radius);
-  return areas;
-}
-
-console.log(calculate(list));
-
 function area(radius: number, pi: number = 3.14): number {
   return pi * radius * radius;
 }
@@ -26,11 +17,10 @@ function negate(x: number): number {
   return -x;
 }
 
-const actionOnList = (action: Function, values: List<number>): List<number> =>
-  values.map(action);
+const actionOnList = (action: Function, values: List<number>): List<number> => values.map(x => action(x));
 
-const areas: List<number> = actionOnList(area, list);
-const diameters: List<number> = actionOnList(diameter, list);
-const doubles: List<number> = actionOnList(double, list);
-const squares: List<number> = actionOnList(square, list);
-const negates: List<number> = actionOnList(negate, list);
+export const areas = (radii: List<number>): List<number> => actionOnList(area, radii);
+export const diameters = (radii: List<number>): List<number> => actionOnList(diameter, radii);
+export const doubles = (numbers: List<number>): List<number> => actionOnList(double, numbers);
+export const squares = (numbers: List<number>): List<number> => actionOnList(square, numbers);
+export const negates = (numbers: List<number>): List<number> => actionOnList(negate, numbers);

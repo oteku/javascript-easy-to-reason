@@ -1,4 +1,4 @@
-// const pi = 3.14159;
-// export function calculate(radii) {
-//   return pi;
-// }
+const pi = 3.14159;
+export function calculate(radii) {
+  return [pi];
+}

@@ -1,6 +1,6 @@
 // @flow
 
-function calculate(radii:Array<number>, pi:number) : Array<number> {
+export function calculate(radii:Array<number>, pi:number) : Array<number> {
     const areas = radii.map(radius => pi * radius * radius);
     return areas;
   }

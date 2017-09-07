@@ -312,7 +312,7 @@ There is lot of other cool stuff in Flow and it may be a reasonable first step i
 
 #### Using another language that compile in Javascript
 **TypeScript**, **PureScript**, **Elm** : lot of static type langs were design to compile in Javascript, some have have functionnal programming design <br/>
-**ReasonML** : a static type & functionnal lang based on OCaml that compile in Javascript thanks to Bucklescript but can also run native.<br/>
+**ReasonML** : a static type & functionnal lang based on OCaml that compile in Javascript thanks to Bucklescript or js_of_caml but can also run native.<br/>
 **Haskell** : a static type & functionnal lang that compile in Javascript thanks to ghcjs but can also run native.
 
 It's another level that involve you to learn a new programming language so before dive inside be sure that's what you need.
