@@ -4,13 +4,15 @@
   "description": "Training project to make javascript code easy to reason about",
   "main": "index.js",
   "scripts": {
-    "prebuild": "npm run flow && npm run eslint && rimraf build/",
-    "build": "babel src -d ./build --ignore '**/*.test.js'",
-    "dev": "babel-watch src/",
+    "prebuild": "npm run flow && npm run lint && rimraf build/",
+    "build": "babel src/index.js -d build",
     "start": "node ./build",
-    "test": "jest",
-    "flow": "flow status",
-    "eslint": "eslint src/**/*.js"
+    "flow": "flow",
+    "dev": "babel-watch src/index.js",
+    "test": "jest --coverage",
+    "prettier": "prettier --write \"./src/**/*.js\" ",
+    "eslint": "eslint . --fix",
+    "lint": "npm run prettier && npm run eslint"
   },
   "repository": {
     "type": "git",
@@ -21,26 +23,30 @@
     "jest",
     "tdd"
   ],
-  "author": "oteku",
-  "license": "ISC",
+  "author": "thaessle",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/oteku/javascript-easy-to-reason/issues"
+    "url": "https://github.com/miage-lille/javascript-easy-to-reason/issues"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-jest": "^20.0.3",
-    "babel-preset-env": "^1.6.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
-    "eslint": "^4.3.0",
-    "eslint-plugin-jest": "^20.0.3",
-    "flow-bin": "^0.53.1",
-    "immutable": "^3.8.1",
-    "jest": "^20.0.4",
-    "prettier": "^1.5.3",
-    "prettier-eslint": "^6.4.2",
-    "prettier-eslint-cli": "^4.1.1",
-    "rimraf": "^2.6.1"
+    "babel-preset-stage-3": "^6.24.1",
+    "babel-watch": "^2.0.7",
+    "eslint": "^4.15.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.8.0",
+    "flow-bin": "^0.63.1",
+    "jest": "^22.0.6",
+    "prettier": "^1.10.2",
+    "prettier-eslint": "^8.7.4"
   },
-  "homepage": "https://github.com/oteku/javascript-easy-to-reason#readme"
+  "homepage": "https://github.com/miage-lille/javascript-easy-to-reason#readme",
+  "dependencies": {
+    "flow-typed": "^2.2.3",
+    "immutable": "^4.0.0-rc.9"
+  }
 }

@@ -33,7 +33,9 @@ in your CI pipeline, when code change, if its covered specification change, you 
 update your test.
 
 #### First iteration
-We write a first test to describe our program
+We write a first test to describe our program.
+
+Edit [calculate.test.js](./__tests__/calculate.test.js) :
 
 ```Javascript
 test('area for [1]', () => {
@@ -52,10 +54,11 @@ npm run test
 It fail because we don't implement anything yet.
 So implement a first naive implementation
 
+Edit [calculate.js](./src/calculate.js) :
 ```javascript
-const pi = 3.14159;
-export function calculate(radii){
-  return pi;
+let pi = 3.14159;
+export default function calculate(radii){
+  return [pi];
 }
 ```
 re-run the test, it pass !
@@ -77,7 +80,7 @@ Don't worry add the implentation
 
 ```Javascript
 let pi = 3.14159;
-function calculate(radii){
+export default function calculate(radii){
   for(let i = 0; i < radii.length; i++){
     radii[i] = pi * radii[i] * radii[i];
   }
@@ -99,14 +102,18 @@ test('result must always be the same', () => {
 });
 ```
 
-It fails (ಥ_ಥ) because our function mutate the input. We should create a new variable inside the function BUT we have better to use Arrays functionnal pragramming capacities. So we will use the [map](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/map) which apply a callback to each item of the array and return a new array :
-
+It fails (ಥ_ಥ) because our function mutate the input. 
+We can fix it by creating a new variable inside the function 
 ```javascript
-export function calculate(radii) {
-  const areas = radii.map(radius => pi * radius * radius);
+export default function calculate(radii){
+  const areas = [];
+  for(let i = 0; i < radii.length; i++){
+    areas[i] = pi * radii[i] * radii[i];
+  }
   return areas;
 }
 ```
+
 Now test pass (•̀ᴗ•́)و
 
 #### Fourth iteration
@@ -116,13 +123,13 @@ Add thoose tests :
 ```javascript
 test('call with an integer must throw a TypeError', () => {
   const radii = 1;
-  //must be wrap in an anonymous function to be test
+  // must be wrap in an anonymous function to be test
   expect(() => calculate(radii)).toThrowError(TypeError);
 });
 
 test('call with an string or undefined in array must throw a TypeError', () => {
   const radii = [1, 'foo', undefined];
-  //must be wrap in an anonymous function to be test
+  // must be wrap in an anonymous function to be test
   expect(() => calculate(radii)).toThrowError(TypeError);
 });
 ```
@@ -139,17 +146,39 @@ export function calculate(radii) {
       throw new TypeError('Argument must be an Array');
     }
   });
+  const areas = [];
+  for(let i = 0; i < radii.length; i++){
+    areas[i] = pi * radii[i] * radii[i];
+  }
+  return areas;
+}
+```
+
+Now test pass but it's time to a first refactoring.
+
+![](./screenshots/red_green_refactor.jpg)
+
+We have better to use Arrays functionnal pragramming capacities. So we will use the [map](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/map) which apply a callback to each item of the array and return a new array :
+
+```javascript
+export default function calculate(radii) {
+  radii.forEach(radius => {
+    if (typeof radius !== 'number') {
+      throw new TypeError('Argument must be an Array of numbers');
+    }
+  });
   const areas = radii.map(radius => pi * radius * radius);
   return areas;
 }
 ```
 
+Test is still passing and we optimized our implementation (•̀ᴗ•́)و
+
 Just for fun new tests :
 
 ```javascript
-test('call with an string or undefined in array must throw a TypeError', () => {
+test('call with Infinity or NaN in array must throw a TypeError', () => {
   const radii = [1, Infinity, NaN];
-  //must be wrap in an anonymous function to be test
   expect(() => calculate(radii)).toThrowError(TypeError);
 });
 ```
@@ -159,11 +188,8 @@ test('call with an string or undefined in array must throw a TypeError', () => {
 
 ```javascript
 export function calculate(radii) {
-  if (!Array.isArray(radii)) {
-    throw new TypeError('Argument must be an Array');
-  }
   radii.forEach(radius => {
-    if (typeof radius !== 'number' || isNaN(radius) || !isFinite(radius)) {
+    if (typeof radius !== 'number' || Number.isNaN(radius) || !Number.isFinite(radius)) {
       throw new TypeError('Argument must be an Array');
     }
   });
@@ -181,9 +207,6 @@ let pi = 3.14159;
 
 export function calculate(radii) {
   pi = 3.14;
-  if (!Array.isArray(radii)) {
-    throw new TypeError('Argument must be an Array');
-  }
   radii.forEach(radius => {
     if (typeof radius !== 'number') {
       throw new TypeError('Argument must be an Array');
@@ -194,7 +217,7 @@ export function calculate(radii) {
 }
 ```
 
-Problem of globals ! You can always put declare `const pi = 3.14159;` it will protect you of mutation because pi is a javascript primitive but not if it was an object. And it will never protect you against another developer who write (variable visibility).
+Problem of globals ! You can always put declare `const pi = 3.14159;` it will protect you of mutation because pi is a javascript primitive but not if it was an object. And it will never protect you against another developer who writes (variable visibility) :
 
 ```javascript
 const pi = 3.14159;
@@ -232,11 +255,11 @@ Generate a compile errors| Unpredictable runtime errors | Compiler tag piece of 
 Perform type check before code run without implicit conversion | Try implicit conversion | Tries to infer if the behaviour is valid |
 Well defined error set |  | Before program run |
 
-OCaml/ReasonML, Rust or Haskell have strong and static type system.
+OCaml, ReasonML, Rust or Haskell have strong and static type system.
 
-C++ or Java have a weak and static type system.
+C++, Go or Java have a weak and static type system.
 
-Python, Ruby or JS have a weak & dynamic type system ! Which mean errors appens on runtime and you can't assume a program works because it runs ᕕ( ᐛ )ᕗ
+Python, Ruby, Elixir or JS have a weak & dynamic type system ! Which mean errors appens on runtime and you can't assume a program works because it runs ᕕ( ᐛ )ᕗ
 
 Don't give up : we're here because Javascipt is amaizing ( ˘ ³˘)♥
 
@@ -245,16 +268,13 @@ A good practice in JS is to **ALWAYS** set default parameters in your functions.
 
 ```Javascript
 export function calculate(radii = [1], pi = 3.14159) {
-  if (!Array.isArray(radii)) {
-    throw new TypeError('Argument must be an Array');
-  }
-  radii.forEach(radius => {
-    if (typeof radius !== 'number' || isNaN(radius) || !isFinite(radius)) {
-      throw new TypeError('Argument must be an Array');
-    }
-  });
-  const areas = radii.map(radius => pi * radius * radius);
-  return areas;
+    radii.forEach(radius => {
+        if (typeof radius !== 'number' || Number.isNaN(radius) || !Number.isFinite(radius)) {
+            throw new TypeError('Argument must be an Array of numbers');
+        }
+    });
+    const areas = radii.map(radius => pi * radius * radius);
+    return areas;
 }
 ```
 
@@ -267,20 +287,24 @@ This practice has 2 benefits :
 #### Using a typechecker
 If the first practice isn't enough in your context which means you don't trust that developers read documentation or use the right tools : you may add a type checker before runtime. That's the purpose of libraries like [Flow](https://flow.org/).
 
-To use it, first install flow and related babel-preset `npm i -D flow-bin babel-preset-flow` then add the preset `"flow"` in `.babelrc` (already done).
+To use it, first install flow and related babel-preset `npm i -D flow-bin babel-preset-flow` then add the preset `"flow"` in `.babelrc` (already done).
 
-To initialize your project just do `./node_modules/.bin/flow init`
+To initialize your project just do `./node_modules/.bin/flow init` (already init)
 
-We will also add a script `npm run flow` to check status.
+We also added a script `npm run flow` to check status.
 
 Now we can use it in our code :
 ```javascript
 // @flow
-export function calculate(radii:Array<number>, pi:number) : Array<number> {
+export default function calculate(
+  radii: Array<number>,
+  pi: number
+): Array<number> {
   const areas = radii.map(radius => pi * radius * radius);
   return areas;
 }
 ```
+*If you're using VSCode, add `"javascript.validate.enable": false` to your user params to avoid error about types outside Typescript files.*
 
 The `// @flow` must be the first line of all file you want to typecheck.
 Declaration of the function means calculate take as parameter : radii an array of numbre, pi a number and the function return an array of number.
@@ -308,17 +332,21 @@ const baz: null    = obj2.baz; // Error!
 const bat: string  = obj2.bat; // Error!
 ```
 
-There is lot of other cool stuff in Flow and it may be a reasonable first step if you think you need a static type system.
+There is lot of other cool stuff in [Flow](https://flow.org/en/docs/) and it may be a reasonable first step if you think you need a static type system.
 
 #### Using another language that compile in Javascript
-**TypeScript**, **PureScript**, **Elm** : lot of static type langs were design to compile in Javascript, some have have functionnal programming design <br/>
-**ReasonML** : a static type & functionnal lang based on OCaml that compile in Javascript thanks to Bucklescript or js_of_caml but can also run native.<br/>
-**Haskell** : a static type & functionnal lang that compile in Javascript thanks to ghcjs but can also run native.
+**TypeScript**, **PureScript**, **Elm** : lot of statically typed langs were design to compile in Javascript, some have have functionnal programming design <br/>
+**ReasonML** : a statically typed & functionnal lang based on OCaml that compile in Javascript thanks to Bucklescript or js_of_caml but can also run native. Having all the power of OCaml, ReasonML is designed to be easy to learn for Javascript devs<br/>
+**Haskell** : a statically typed & functionnal lang that compile in Javascript thanks to ghcjs but can also run native.
+**Nim** : a statically typed & multiple paradigms lang that compile to Javascript, but also C, C++ or webassembly.
 
 It's another level that involve you to learn a new programming language so before dive inside be sure that's what you need.
 
-During this BBL we will not explore this possibiliy.
-I advice you to read about and try [ReasonML](https://reasonml.github.io/) if you want go further in this topic.
+During this training we will not explore this possibiliy.
+I advice you to read about and try [ReasonML](https://reasonml.github.io/) or [Elm](http://elm-lang.org/) if you want go further in this topic.
+
+So if you want to secure your code with typed props remember this order (but each step require to learn something new) : <br/>
+Vanilla Javascript **<** Javascript with default props **<** Javascript with Flow **<** ReasonML 
 
 #### Does Type system make code easy to reason about ?
 * Does not affect or mutate external state (ie : no side effects) ✗
@@ -333,48 +361,125 @@ As we have seen before, there is no immutability in JS : `const` is an immutable
 
 [Immutable.js](https://facebook.github.io/immutable-js/) is a library made by Facebook that give you immutable data structures. A good point is that you get also more data structures.
 
-To use immutable, install it `npm i -D immutable`
+To use immutable, install it `npm i -S immutable@rc` (immutable 4)
 
-We can alter our first function like this to be sure `calculate` never alter `radii` ... so we also need to alter tests because we change specification : radii is now a List and no more an Array. <br/> 
-Good job TDD regressions avoid (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧
+We can alter our first function usign List (immutable) instead of Array (mutable) to be sure `calculate` never alter `radii` :
+
 ```Javascript
 import { List } from 'immutable';
 
-const radiiSample = List([1,2]);
-function calculate(radii=List([1]), pi=3.14){
-    if (!List.isList(radii)) {
-      throw new TypeError('Argument must be a List');
-    }
-    radii.forEach(radius => {
-      if (typeof radius !== 'number' || isNaN(radius) || !isFinite(radius)) {
-        throw new TypeError('Argument must be an Array');
-      }
-    });
-    const areas = radii.map(radius => pi * radius * radius);
-    return areas;
+export default function calculate(radii = List([1]), pi = 3.14159) {
+  if (!List.isList(radii)) {
+    throw new TypeError("Argument must be a List");
   }
-
-  console.log(calculate(radiiSample));
+  radii.forEach(radius => {
+    if (
+      typeof radius !== "number" ||
+      Number.isNaN(radius) ||
+      !Number.isFinite(radius)
+    ) {
+      throw new TypeError("Argument must be an Array");
+    }
+  });
+  const areas = radii.map(radius => pi * radius * radius);
+  return areas;
+}
 ```
 
 Usage with flow :
 ```Javascript
 // @flow
-import  { List } from 'immutable';
+import { List } from "immutable";
 
-const radiiSample:List<number> = List([1,2]);
-function calculate(radii:List<number>, pi:number = 3.14) : List<number>{
-    const areas = radii.map(radius => pi * radius * radius);
-    return areas;
-  }
+export default function calculate(
+  radii: List<number>,
+  pi: number = 3.14159
+): List<number> {
+  const areas = radii.map(radius => pi * radius * radius);
+  return areas;
+}
+```
+Because we're using flow, we can remove the 3 last unit tests (we will rely on type system instead of managing errors inside the function).
 
-  console.log(calculate(radiiSample));
+Other tests pass ... Weired ? We're our function return a List that we're testing against an Array ! That's because :
+* `.toEqual` performs a deep equal : this matcher recursively checks the equality of all fields, rather than checking for object identity 
+* `flow` is a pre-processor, it doesn't check type at runtime
+
+To make tests efficient, we need to add them to flow scope. So add `// @flow` on the first line of `calculate.test.js`
+
+```
+npm run flow
+```
+It fails because flow can't resolve type of Jest globals. 
+
+Install `flow-typed` 
+``` zsh
+npm i -D flow-typed
+# install jest types definitions
+./node_modules/.bin/flow-typed install jest@22.0.6 
+# restart flow server
+./node_modules/.bin/flow stop
+./node_modules/.bin/flow start
+# test
+npm run flow
 ```
 
-Easy “ヽ(´▽｀)ノ”
+Now we need to update our tests :
+``` js
+// @flow
+import { List } from "immutable";
+import calculate from "../src/calculate";
+
+test("area for [1]", () => {
+  const radii = List([1]);
+  const expectedResult = List([3.14159 * 1 * 1]);
+  expect(calculate(radii)).toEqual(expectedResult);
+});
+
+test("area for [1, 2]", () => {
+  const radii = List([1, 2]);
+  const expectedResult = List([3.14159 * 1 * 1, 3.14159 * 2 * 2]);
+  expect(calculate(radii)).toEqual(expectedResult);
+});
+
+test("result must always be the same", () => {
+  const radii = List([1, 2]);
+  calculate(radii);
+  const a = calculate(radii);
+  expect(a).toEqual(calculate(List([1, 2])));
+});
+```
+
+Good job TDD regressions avoid (ﾉ◕ヮ◕)ﾉ*:・ﾟ✧
 
 Another good point is now you have immutability it is easier and faster to compare datas. No more deepEqual required, just use the [is()](https://facebook.github.io/immutable-js/docs/#/is)
 
+``` js
+// @flow
+import { List, is } from "immutable";
+import calculate from "../src/calculate";
+
+test("area for [1]", () => {
+  const radii = List([1]);
+  const expectedResult = List([3.14159 * 1 * 1]);
+  expect(is(calculate(radii), expectedResult)).toBe(true);
+});
+
+test("area for [1, 2]", () => {
+  const radii = List([1, 2]);
+  const expectedResult = List([3.14159 * 1 * 1, 3.14159 * 2 * 2]);
+  expect(is(calculate(radii), expectedResult)).toBe(true);
+});
+
+test("result must always be the same", () => {
+  const radii = List([1, 2]);
+  calculate(radii);
+  const a = calculate(radii);
+  expect(is(a, calculate(List([1, 2])))).toBe(true);
+});
+```
+
+Easy “ヽ(´▽｀)ノ”
 
 #### Does Immutability make code easy to reason about ?
 * Does not affect or mutate external state (ie : no side effects) ✓
@@ -419,35 +524,38 @@ const actionOnList = (action:(radius:number, pi:number) => number, radii:List<nu
 We can use the same principe to define lot of new functions :
 ```Javascript
 // @flow
-import  { List } from 'immutable';
+import { List } from "immutable";
 
-const list:List<number> = List([1,2]);
-
-function calculate(radii:List<number>, pi:number = 3.14) : List<number>{
-    const areas = radii.map(radius => pi * radius * radius);
-    return areas;
-  }
-
-  console.log(calculate(list));
-
-
-function area(radius:number, pi:number = 3.14) : number { 
-    return pi * radius * radius;
+function area(radius: number, pi: number = 3.14159): number {
+  return pi * radius * radius;
 }
-function diameter(radius:number, pi:number = 3.14) : number {
-    return 2 * pi * radius;
+function diameter(radius: number, pi: number = 3.14159): number {
+  return 2 * pi * radius;
 }
-function square(x:number) :number { return x * x }
-function double(x:number) :number { return x * 2 }
-function negate(x:number) :number { return -x }
+function square(x: number): number {
+  return x * x;
+}
+function double(x: number): number {
+  return x * 2;
+}
+function negate(x: number): number {
+  return -x;
+}
 
-const actionOnList = (action:Function, values:List<number>) : List<number> => values.map(action);
+const actionOnList = (action: Function, values: List<number>): List<number> =>
+  values.map(v => action(v));
 
-const areas: List<number> = actionOnList(area, list);
-const diameters: List<number> = actionOnList(diameter, list);
-const doubles: List<number> = actionOnList(double, list);
-const squares: List<number> = actionOnList(square, list);
-const negates: List<number> = actionOnList(negate, list);
+export const areas = (list: List<number>): List<number> =>
+  actionOnList(area, list);
+export const diameters = (list: List<number>): List<number> =>
+  actionOnList(diameter, list);
+export const doubles = (list: List<number>): List<number> =>
+  actionOnList(double, list);
+export const squares = (list: List<number>): List<number> =>
+  actionOnList(square, list);
+export const negates = (list: List<number>): List<number> =>
+  actionOnList(negate, list);
+
 ```
 
 #### Does Functionnal programming make code easy to reason about ?
