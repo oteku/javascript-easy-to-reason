@@ -1,6 +1,8 @@
 # Javascript code easy to reason about
 
-A Training useable as a Brown Bag Lunch
+A Training to understand how make reasonable javascript code.
+Start by cloning this repository and run `npm i`
+
 
 ## Proposed Definition
 Code easy to reason about :
@@ -521,7 +523,8 @@ const calculateDiameter = (radius:number, pi:number = 3.14) : number => 2 * pi *
 const actionOnList = (action:(radius:number, pi:number) => number, radii:List<number>) : List<number> => radii.map(action);
 ```
 
-We can use the same principe to define lot of new functions :
+We can use the same principe to define lot of new functions. This technique from functional programming is named **partial application**. *Partially applying* a function is a technique in which we prefill arguments to a function before it's even executed. *Partial application* of a function returns a new function with predefined arguments, one that we'll call later.
+
 ```Javascript
 // @flow
 import { List } from "immutable";
@@ -558,6 +561,29 @@ export const negates = (list: List<number>): List<number> =>
 
 ```
 
+Having to use partial application everywhere gets verbose and tedious. Fortunately, Lambda calculus provides us with a solution: **curry**. 
+**Currying** is another core concept in functional programming. Technically, a curried function is always a series of single-argument functions, which is what I was just complaining about. In pure functional languages like OCaml or Haskell, the syntax generally makes that look no different than calling a function with multiple arguments.
+
+``` Javascript
+const curryActionOnList = (values: List<number>) => (action: Function) =>
+  values.map(v => action(v));
+
+export const areas = (list: List<number>): List<number> =>
+  curryActionOnList(list)(area);
+export const diameters = (list: List<number>): List<number> =>
+  curryActionOnList(list)(diameter);
+export const doubles = (list: List<number>): List<number> =>
+  curryActionOnList(list)(double);
+export const squares = (list: List<number>): List<number> =>
+  curryActionOnList(list)(square);
+export const negates = (list: List<number>): List<number> =>
+  curryActionOnList(list)(negate);
+```
+
+A curried function can be called with only a subset of its arguments, and it will return a new function that accepts the remaining arguments. If you call a curried function with all of its arguments, it will call just call the function.
+
+Notice that to make curry work for us, we had to reverse the argument order. This is extremely common with functional programming
+
 #### Does Functionnal programming make code easy to reason about ?
 * Does not affect or mutate external state (ie : no side effects) ✓ 
 * Does not rely on external state ✓
@@ -569,4 +595,4 @@ export const negates = (list: List<number>): List<number> =>
 * Read [Eric Elliott](https://twitter.com/_ericelliott) about [what is Functionnal programming in JS](https://medium.com/javascript-scene/master-the-javascript-interview-what-is-functional-programming-7f218c68b3a0) and continue by reading his related others
 * Watch [Anjana Vakil](https://twitter.com/anjanavakil) talk about [Functional Programming with JavaScript](https://youtu.be/e-5obm1G_FY) and about [Immutable data structures for JS](https://youtu.be/Wo0qiGPSV-s)
 * Watch [Hanneli Tavante](https://twitter.com/hannelita) talk at Devoxx about [type theory for beginners](https://youtu.be/UXBoiqRJ6DQ) 
-* Watch [Jeff Morrison](https://twitter.com/lbljeffmo) talk [Deep dive into flow](https://youtu.be/VEaDsKyDxkY) 
+* Read [Javier Chávarri](https://twitter.com/javierwchavarri) post [Inference engines: 5 examples with TypeScript, Flow and Reason](https://medium.com/@javierwchavarri/inference-engines-5-examples-with-typescript-flow-and-reason-edef2f4cf2d3) 
